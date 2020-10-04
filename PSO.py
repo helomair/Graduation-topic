@@ -15,6 +15,24 @@
 #       T_mutated
 
 import numpy as np
+import random
+
+class meta_info_vector:
+    def __init__(self, timestamp, crafted_packets_num, craft):
+        self.timestamp = timestamp
+        self.crafted_packets_num = crafted_packets_num
+        self.craft = craft
+
+class particle:
+    # x = all vectors
+    # y = personal best vectors
+    # d = distance evaluation
+    # v = velocity
+    def __init__(self, vectors):
+        self.x = vectors
+        self.y = vectors
+        self.d = np.inf * (-1)
+        self.v = None
 
 class PSO:
 
@@ -35,10 +53,32 @@ class PSO:
 
     def Vectorize(self, traffic):
         #TODO: meta-info vectorization
-        
+        # traffic might be :
+        # No. | Time | Source         | Destination      | Protocol | Length |
+        #  1  | 1.00 | 192.168.1.117  | 166.111.22.33    | TCP      | 54     |
+        #  2  | 1.80 | 192.168.1.116  | 166.111.22.33    | UDP      | 150    |
+        x = []
+        i = 0
+        for t in traffic:
+            x[i] = meta_info_vector(t['Time'], 0, None)
+            i += 1
+
+        return x
         
     def Initialize(self, t, swarm, lc, lt):
         #TODO: population initialize
+        #TODO: craft_num & n not clarify how to initialize
+        S = []
+        for i in range(swarm):
+            tmp_t = t
+            last_timestamp = 0
+            for j in range(len(tmp_t)):
+                time_range = tmp_t[j].timestamp - last_timestamp
+                craft_num = random.randint(0, self.lc)
+                n = random.randint(0, )
+
+                
+            S[i] = particle(tmp_t)
 
     def Rebuild(self, p):
         #TODO: rebuild vectors to traffic
