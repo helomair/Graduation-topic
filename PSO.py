@@ -68,16 +68,35 @@ class PSO:
     def Initialize(self, t, swarm, lc, lt):
         #TODO: population initialize
         #TODO: craft_num & n not clarify how to initialize
+        total = len(t)
+        max_craft_num = total * self.lc
         S = []
         for i in range(swarm):
             tmp_t = t
             last_timestamp = 0
             for j in range(len(tmp_t)):
                 time_range = tmp_t[j].timestamp - last_timestamp
-                craft_num = random.randint(0, self.lc)
-                n = random.randint(0, )
-
+                craft_num = random.randint(0, max_craft_num)
+                max_craft_num -= craft_num
                 
+                # in paper, time between two packets need to be delivered into n-pieces
+                # but not clearly say that how to initialize n, so i use craft_num 
+                n = craft_num + 1
+                craft_pkg_list = []
+                if n != 0:
+                    craft_pkg_time_range = time_range / n #TODO: maybe this is wrong
+                    for k in craft_num:
+                        craft_pkg_list[k][0] = craft_pkg_time_range     # Interarrival Time
+                        craft_pkg_list[k][1] = random.randint(1, 5)     # Protocol layers
+                        craft_pkg_list[k][2] = random.randint(0, 200)   # Payload Size, TODO: the range need to be clerified 
+
+                tmp_t[j].crafted_packets_num = craft_num
+                tmp_t[j].craft = craft_pkg_list
+
+                # update last timestamp
+                last_timestamp = tmp_t[j].timestamp
+                
+            # a new swarm done
             S[i] = particle(tmp_t)
 
     def Rebuild(self, p):
